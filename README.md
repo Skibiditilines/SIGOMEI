@@ -51,6 +51,11 @@ ui/
 
 ```
 
+### Pruebas
+
+```bash
+pytest tests/
+```
 ## Servidor
 
 ### Estructura
