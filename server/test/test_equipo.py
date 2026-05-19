@@ -1,8 +1,8 @@
 import pytest
 # Estas importaciones fallarán en este momento porque no se ha escrito el código (TDD - Fase Roja)
-from server.src.models import Equipo
-from server.src.controllers import EquipoController
-from server.src.exceptions import BusinessRuleException, ValidationError
+from app.models import Equipo
+from app.services import EquipoController
+from app.core import BusinessRuleException, ValidationError
 
 @pytest.fixture
 def equipo_controller():

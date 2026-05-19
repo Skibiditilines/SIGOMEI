@@ -1,7 +1,7 @@
 import pytest
-from server.src.models import Tecnico
-from server.src.controllers import TecnicoController
-from server.src.exceptions import ValidationError
+from app.models import Tecnico
+from app.services import TecnicoController
+from app.core import ValidationError
 
 @pytest.fixture
 def tecnico_controller():

@@ -1,8 +1,8 @@
 import pytest
 from datetime import date, timedelta
-from server.src.models import Orden, Equipo, Tecnico
-from server.src.controllers import OrdenController
-from server.src.exceptions import BusinessRuleException, StateTransitionException
+from app.models import Orden, Equipo, Tecnico
+from app.services import OrdenController
+from app.core import BusinessRuleException, StateTransitionException
 
 @pytest.fixture
 def orden_controller():

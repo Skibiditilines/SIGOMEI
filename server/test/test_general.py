@@ -1,5 +1,5 @@
 import pytest
-from server.src.controllers import OrdenController
+from app.services import OrdenController
 
 # Simulaciones para las pruebas generales
 def test_cp_24_crear_orden_servidor_desconectado():
