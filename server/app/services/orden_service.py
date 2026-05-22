@@ -23,6 +23,7 @@ Casos de prueba cubiertos:
 """
 
 import threading
+from datetime import datetime, date
 from app.models.orden import Orden
 from app.core.exceptions import BusinessRuleException, StateTransitionException
 
@@ -32,6 +33,13 @@ class OrdenController:
     Servicio que gestiona el ciclo de vida de las Órdenes de mantenimiento.
     En la arquitectura FastAPI, este servicio es invocado desde las rutas (routes/).
     """
+
+    def __init__(self):
+        """Inicializar almacenamiento en memoria, contador de IDs y bandera de conexión."""
+        self._db = {}  # Diccionario {id: Orden}
+        self._id_counter = 0  # Contador para IDs incrementales
+        self._db_conectada = True  # Bandera de conexión a BD
+        self._lock = threading.Lock()  # Lock para thread-safety en concurrencia
 
     def crear_orden(self, orden: Orden) -> bool:
         """
@@ -51,7 +59,38 @@ class OrdenController:
             debe tener nivel_certificacion 'II' o 'III'. Si no →
             BusinessRuleException "Equipo Alta Criticidad requiere Técnico II o III".
         """
-        pass
+        # Verificar conexión a BD
+        if not self._db_conectada:
+            raise Exception("Sin conexión al servidor")
+        
+        # RN-01: Especialidad del técnico debe coincidir con tipo de equipo
+        if orden.tecnico.especialidad != orden.equipo.tipo:
+            raise BusinessRuleException("Especialidad no coincide con tipo de equipo")
+        
+        # RN-02: No debe haber colisión de fechas (mismo equipo, misma fecha, estado != Cancelada)
+        for ord in self._db.values():
+            if (ord.equipo.id == orden.equipo.id and
+                ord.fecha_programada == orden.fecha_programada and
+                ord.estado != "Cancelada"):
+                raise BusinessRuleException("Colisión de fechas")
+        
+        # RN-03: El técnico debe estar en estatus 'Activo'
+        if orden.tecnico.estatus != "Activo":
+            raise BusinessRuleException("Técnico se encuentra inactivo")
+        
+        # RN-07: Si equipo tiene criticidad 'Alta', técnico debe ser nivel II o III
+        if orden.equipo.criticidad == "Alta":
+            if orden.tecnico.nivel_certificacion not in ["II", "III"]:
+                raise BusinessRuleException("Equipo Alta Criticidad requiere Técnico II o III")
+        
+        # Asignar ID incremental (thread-safe)
+        with self._lock:
+            self._id_counter += 1
+            orden.id = self._id_counter
+        
+        # Guardar en BD en memoria
+        self._db[orden.id] = orden
+        return True
 
     def guardar_mock(self, orden: Orden) -> None:
         """
@@ -59,7 +98,13 @@ class OrdenController:
         interno sin ejecutar validaciones de negocio.
         Usado en: CP-15, CP-16, CP-17, CP-18, CP-23, PU-RN05.
         """
-        pass
+        # Asignar ID si no lo tiene
+        if orden.id is None:
+            self._id_counter += 1
+            orden.id = self._id_counter
+        
+        # Guardar en BD sin validar
+        self._db[orden.id] = orden
 
     def cancelar_orden(self, orden_id) -> bool:
         """
@@ -70,7 +115,24 @@ class OrdenController:
           "Transición de estado no permitida. Orden ya cerrada."
           si la orden ya está en estado 'Finalizada' o 'Cancelada'.
         """
-        pass
+        # Verificar conexión a BD
+        if not self._db_conectada:
+            raise Exception("Sin conexión al servidor")
+        
+        # Obtener la orden
+        if orden_id not in self._db:
+            return False
+        
+        orden = self._db[orden_id]
+        
+        # RN-08: No permitir cancelar si ya está en estado 'Finalizada' o 'Cancelada'
+        if orden.estado in ["Finalizada", "Cancelada"]:
+            raise StateTransitionException("Transición de estado no permitida. Orden ya cerrada.")
+        
+        # Cancelar la orden (permitido desde 'Programada' o 'En ejecucion')
+        orden.estado = "Cancelada"
+        self._db[orden_id] = orden
+        return True
 
     def actualizar_estado(self, orden_id, nuevo_estado: str) -> bool:
         """
@@ -80,7 +142,26 @@ class OrdenController:
           "La fecha actual es anterior a la fecha programada"
           si la fecha del sistema es anterior a la fecha_programada de la orden.
         """
-        pass
+        # Verificar conexión a BD
+        if not self._db_conectada:
+            raise Exception("Sin conexión al servidor")
+        
+        # Obtener la orden
+        if orden_id not in self._db:
+            return False
+        
+        orden = self._db[orden_id]
+        
+        # RN-05: Si transitando a 'En ejecucion', verificar que fecha actual >= fecha_programada
+        if nuevo_estado == "En ejecucion":
+            fecha_actual = datetime.now().date()
+            if fecha_actual < orden.fecha_programada:
+                raise BusinessRuleException("La fecha actual es anterior a la fecha programada")
+        
+        # Actualizar estado
+        orden.estado = nuevo_estado
+        self._db[orden_id] = orden
+        return True
 
     def realizar_reporte(self, orden_id, costo_cierre: float, observaciones: str = "") -> bool:
         """
@@ -91,14 +172,33 @@ class OrdenController:
           "El reporte y los costos reales solo aplican al finalizar"
           si la orden está en estado 'Programada'.
         """
-        pass
+        # Verificar conexión a BD
+        if not self._db_conectada:
+            raise Exception("Sin conexión al servidor")
+        
+        # Obtener la orden
+        if orden_id not in self._db:
+            return False
+        
+        orden = self._db[orden_id]
+        
+        # RN-06: No permitir reporte si estado es 'Programada'
+        if orden.estado == "Programada":
+            raise BusinessRuleException("El reporte y los costos reales solo aplican al finalizar")
+        
+        # Registrar costo real y observaciones
+        orden.costo_real = costo_cierre
+        orden.observaciones = observaciones
+        orden.estado = "Finalizada"
+        self._db[orden_id] = orden
+        return True
 
     def obtener_orden(self, orden_id) -> Orden:
         """
         CP-18, CP-23: Obtener una orden por su ID.
           Retorna None si la orden no existe en el almacenamiento.
         """
-        pass
+        return self._db.get(orden_id, None)
 
     def simular_desconexion_db(self) -> None:
         """
@@ -113,7 +213,7 @@ class OrdenController:
           datos (DB remota o servicio interno): equivalente a un
           ConnectionRefusedError o timeout en el socket de la DB.
         """
-        pass
+        self._db_conectada = False
 
     # =========================================================================
     # ⚡ CP-25: CONCURRENCIA / SOCKETS
@@ -155,4 +255,10 @@ class OrdenController:
           Sin información suficiente sobre el protocolo de Sockets planeado
           para SIGOMEI, se deja como cascarón hasta obtener la especificación.
         """
-        pass
+        # Generar ID único thread-safe
+        with self._lock:
+            self._id_counter += 1
+            nuevo_id = self._id_counter
+        
+        # Retornar dict con ID y datos
+        return {'id': nuevo_id, 'datos': datos}

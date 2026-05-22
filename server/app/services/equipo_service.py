@@ -23,6 +23,12 @@ class EquipoController:
     En la arquitectura FastAPI, este servicio es invocado desde las rutas (routes/).
     """
 
+    def __init__(self):
+        """Inicializar almacenamiento en memoria y contador de IDs."""
+        self._db = {}  # Diccionario {id: Equipo}
+        self._id_counter = 0  # Contador para IDs incrementales
+        self._fake_orders = set()  # Set de equipment_ids con órdenes simuladas
+
     def registrar_equipo(self, equipo: Equipo) -> bool:
         """
         CP-01 (pos): Registrar un equipo con todos sus datos válidos.
@@ -30,7 +36,17 @@ class EquipoController:
         CP-02 (neg): Lanzar ValidationError con mensaje
           "Campo requerido: serie" si el campo 'serie' está vacío.
         """
-        pass
+        # Validación: serie no debe estar vacía
+        if not equipo.serie or equipo.serie.strip() == "":
+            raise ValidationError("Campo requerido: serie")
+        
+        # Asignar ID incremental
+        self._id_counter += 1
+        equipo.id = self._id_counter
+        
+        # Guardar en BD en memoria
+        self._db[equipo.id] = equipo
+        return True
 
     def buscar_equipos(self, termino: str) -> list:
         """
@@ -38,7 +54,17 @@ class EquipoController:
           Compara el término contra el modelo (y otros campos relevantes).
           Retorna una lista de instancias Equipo que coincidan.
         """
-        pass
+        resultados = []
+        termino_lower = termino.lower()
+        
+        for equipo in self._db.values():
+            # Buscar en modelo, marca y tipo
+            if (termino_lower in equipo.modelo.lower() or
+                termino_lower in equipo.marca.lower() or
+                termino_lower in equipo.tipo.lower()):
+                resultados.append(equipo)
+        
+        return resultados
 
     def actualizar_equipo(self, equipo: Equipo) -> bool:
         """
@@ -46,14 +72,19 @@ class EquipoController:
           Por ejemplo, cambiar 'estado_operativo' a "En Mantenimiento".
           Retorna True si la actualización fue exitosa.
         """
-        pass
+        if equipo.id not in self._db:
+            return False
+        
+        # Actualizar el equipo en la BD
+        self._db[equipo.id] = equipo
+        return True
 
     def obtener_equipo(self, equipo_id) -> Equipo:
         """
         CP-04, CP-05: Obtener un equipo por su ID.
           Retorna None si el ID no existe en el almacenamiento.
         """
-        pass
+        return self._db.get(equipo_id, None)
 
     def eliminar_equipo(self, equipo_id) -> bool:
         """
@@ -63,7 +94,16 @@ class EquipoController:
           si el equipo tiene órdenes vinculadas.
           Retorna True si la eliminación fue exitosa.
         """
-        pass
+        # Verificar si el equipo tiene órdenes asociadas (fake_orders)
+        if equipo_id in self._fake_orders:
+            raise BusinessRuleException("No se puede eliminar equipo con órdenes asociadas")
+        
+        # Eliminar el equipo
+        if equipo_id in self._db:
+            del self._db[equipo_id]
+            return True
+        
+        return False
 
     def obtener_todos(self) -> list:
         """
@@ -71,7 +111,7 @@ class EquipoController:
           Usado para verificar que una cancelación en la UI
           no modifica el conteo de equipos en el backend.
         """
-        pass
+        return list(self._db.values())
 
     def asociar_orden_falsa_para_test(self, equipo_id) -> None:
         """
@@ -80,4 +120,4 @@ class EquipoController:
           una orden asociada, para activar la restricción de eliminación
           sin necesidad de crear una Orden real en la BD.
         """
-        pass
+        self._fake_orders.add(equipo_id)
