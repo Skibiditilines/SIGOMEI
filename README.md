@@ -1,4 +1,4 @@
-# Proyecto SIGOMEO
+# Proyecto SIGOMEI
 
 ## Tecnologias
 
