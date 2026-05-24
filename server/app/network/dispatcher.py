@@ -181,6 +181,7 @@ class Dispatcher:
             "orden.actualizar_estado": self._orden_actualizar_estado,
             "orden.reporte":          self._orden_reporte,
             "orden.obtener":          self._orden_obtener,
+            "orden.listar":           self._orden_listar,
         }
 
     def dispatch(self, action: str, payload: dict) -> dict:
@@ -300,3 +301,7 @@ class Dispatcher:
         orden_id = p.get("id")
         orden = self._ordenes.obtener_orden(orden_id)
         return _ok(_orden_to_dict(orden))
+
+    def _orden_listar(self, p: dict) -> dict:
+        ordenes = self._ordenes.obtener_todas()
+        return _ok([_orden_to_dict(o) for o in ordenes])

@@ -149,3 +149,16 @@ def test_cp_23_cancelar_orden_programada_o_ejecucion(orden_controller):
     resultado = orden_controller.cancelar_orden(orden.id)
     assert resultado is True
     assert orden_controller.obtener_orden(orden.id).estado == "Cancelada"
+
+def test_obtener_todas_ordenes(orden_controller):
+    """
+    Validar que se listen todas las órdenes registradas en el sistema.
+    """
+    equipo = Equipo(tipo="Mecanico")
+    tecnico = Tecnico(especialidad="Mecanico", estatus="Activo")
+    orden = Orden(equipo=equipo, tecnico=tecnico, tipo_mantenimiento="Mecanico")
+    orden_controller.crear_orden(orden)
+    
+    ordenes = orden_controller.obtener_todas()
+    assert len(ordenes) > 0
+    assert any(o.id == orden.id for o in ordenes)
