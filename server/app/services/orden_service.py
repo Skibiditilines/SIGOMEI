@@ -162,6 +162,10 @@ class OrdenController:
         # RN-01: Especialidad del técnico debe coincidir con tipo de equipo
         if orden.tecnico.especialidad != orden.equipo.tipo:
             raise BusinessRuleException("Especialidad no coincide con tipo de equipo")
+            
+        # El tipo de mantenimiento debe coincidir con la especialidad del técnico
+        if orden.tipo_mantenimiento != orden.tecnico.especialidad:
+            raise BusinessRuleException("El tipo de mantenimiento debe coincidir con la especialidad del técnico")
         
         # Asegurar stubs de equipo y tecnico para poder buscar colisiones correctamente
         self._ensure_equipo_stub(orden.equipo)

@@ -14,7 +14,7 @@ def test_cp_11_crear_orden_exito(orden_controller):
     """
     equipo = Equipo(tipo="Mecanico")
     tecnico = Tecnico(especialidad="Mecanico", estatus="Activo")
-    orden = Orden(equipo=equipo, tecnico=tecnico, tipo_mantenimiento="Preventivo")
+    orden = Orden(equipo=equipo, tecnico=tecnico, tipo_mantenimiento="Mecanico")
     
     resultado = orden_controller.crear_orden(orden)
     assert resultado is True
@@ -39,10 +39,10 @@ def test_cp_13_y_pu_rn02_crear_orden_colision_fechas(orden_controller):
     tecnico = Tecnico(especialidad="Mecanico", estatus="Activo")
     hoy = date.today()
     
-    orden_existente = Orden(equipo=equipo, tecnico=tecnico, fecha_programada=hoy, estado="En ejecucion")
+    orden_existente = Orden(equipo=equipo, tecnico=tecnico, fecha_programada=hoy, estado="En ejecucion", tipo_mantenimiento="Mecanico")
     orden_controller.crear_orden(orden_existente)
     
-    orden_nueva = Orden(equipo=equipo, tecnico=tecnico, fecha_programada=hoy)
+    orden_nueva = Orden(equipo=equipo, tecnico=tecnico, fecha_programada=hoy, tipo_mantenimiento="Mecanico")
     
     with pytest.raises(BusinessRuleException, match="Colisión de fechas"):
         orden_controller.crear_orden(orden_nueva)
@@ -53,7 +53,7 @@ def test_cp_14_y_pu_rn03_crear_orden_tecnico_inactivo(orden_controller):
     """
     equipo = Equipo(tipo="Mecanico")
     tecnico = Tecnico(especialidad="Mecanico", estatus="Inactivo")
-    orden = Orden(equipo=equipo, tecnico=tecnico)
+    orden = Orden(equipo=equipo, tecnico=tecnico, tipo_mantenimiento="Mecanico")
     
     with pytest.raises(BusinessRuleException, match="Técnico se encuentra inactivo"):
         orden_controller.crear_orden(orden)
@@ -116,7 +116,7 @@ def test_cp_19_y_pu_rn07_crear_orden_criticidad_alta_tecnico_i(orden_controller)
     """
     equipo = Equipo(tipo="Mecanico", criticidad="Alta")
     tecnico = Tecnico(especialidad="Mecanico", nivel_certificacion="I", estatus="Activo")
-    orden = Orden(equipo=equipo, tecnico=tecnico)
+    orden = Orden(equipo=equipo, tecnico=tecnico, tipo_mantenimiento="Mecanico")
     
     with pytest.raises(BusinessRuleException, match="Equipo Alta Criticidad requiere Técnico II o III"):
         orden_controller.crear_orden(orden)
@@ -127,7 +127,7 @@ def test_cp_20_crear_orden_criticidad_alta_tecnico_iii(orden_controller):
     """
     equipo = Equipo(tipo="Mecanico", criticidad="Alta")
     tecnico = Tecnico(especialidad="Mecanico", nivel_certificacion="III", estatus="Activo")
-    orden = Orden(equipo=equipo, tecnico=tecnico)
+    orden = Orden(equipo=equipo, tecnico=tecnico, tipo_mantenimiento="Mecanico")
     
     resultado = orden_controller.crear_orden(orden)
     assert resultado is True
