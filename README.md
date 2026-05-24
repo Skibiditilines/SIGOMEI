@@ -1,13 +1,38 @@
 # Proyecto SIGOMEI
 
-## Tecnologias
+## **Instalación**
 
-- Python
-    - Fastapi (Servidor)
-    - Pytest (Pruebas unitarias)
-    - Selenium (Pruebas de interfaz)
-    - CustomTkinter (Interfaz Grafica)
-- MySQL
+1. Clonar el repositorio de github desde una terminal: `git clone https://github.com/Skibiditilines/SIGOMEI.git`
+
+## **Configuración**
+
+1. Crear entorno virtual en terminal desde la carpeta de proyecto: `python -m venv venv`  
+2. Activar el entorno virtual: `.\venv\Scripts\activate`  
+3. Instalar dependencias dentro del entorno:  
+   1. `pip install -r server\requirements.txt`  
+   2. `pip install -r ui\requirements.txt`
+
+## **Ejecución del servidor:**
+
+Desde una terminal independiente dentro de la carpeta de proyecto “SIGOMEI” y con el entorno virtual activado se debe ejecutar lo siguiente:
+
+1. Acceder a la carpeta servidor: `cd server`  
+2. Ejecutar servidor: `python server_tcp.py`
+
+## **Ejecución del cliente:**
+
+Desde una terminal independiente aparte de la terminal de servidor ya activa e igualmente en la carpeta de proyecto “SIGOMEI” con el entorno virtual activado se ejecuta con los siguiente
+
+1. Acceder a la carpeta de interfaz gráfica / cliente: `cd ui`  
+2. Ejecutar la interfaz gráfica: `python main.py`
+
+## **Requisitos de software**
+
+* Python \=\< 3.11.9  
+* Listado de dependencias dentro del proyecto:  
+  * customtkinter (Intefaz Grafica)  
+  * pytest (Pruebas unitarias)  
+  * sockets tcp (Conexión de sockets)
 
 ## Interfaz Grafica
 
