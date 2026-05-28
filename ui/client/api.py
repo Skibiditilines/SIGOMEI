@@ -25,6 +25,8 @@ Uso básico desde la UI:
 
     # Órdenes
     orden = api.crear_orden(equipo=equipo, tecnico=tecnico, ...)
+
+tag: 1.0.0
 """
 
 from client.socket_client import SigomeiClient

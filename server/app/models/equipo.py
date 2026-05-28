@@ -10,6 +10,7 @@ Usado en los tests:
   - CP-04: editar estado_operativo
   - CP-05 & PU-RN04: no eliminar equipo con órdenes asociadas
   - CP-11 al CP-20: usado como parte de una Orden
+tag: 1.0.0
 """
 
 

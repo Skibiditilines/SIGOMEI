@@ -4,6 +4,7 @@ app/core/database.py
 Gestor de base de datos SQLite para SIGOMEI.
 Permite configurar el modo de ejecución ("oficial" o "prueba")
 y proporciona las conexiones y la creación del esquema.
+tag: 1.0.0
 """
 
 import os

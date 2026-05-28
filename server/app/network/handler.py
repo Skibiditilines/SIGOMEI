@@ -18,6 +18,8 @@ Formato de respuesta (éxito):
 
 Formato de respuesta (error):
   {"status": "error", "type": "<NombreExcepcion>", "message": "<detalle>"}
+
+tag: 1.0.0
 """
 
 import json

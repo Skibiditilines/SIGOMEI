@@ -3,6 +3,7 @@ init_databases.py
 =================
 Script para inicializar físicamente las dos bases de datos SQLite
 (de prueba y oficial) del proyecto SIGOMEI con su esquema relacional.
+tag: 1.0.0
 """
 
 import os

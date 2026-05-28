@@ -17,6 +17,8 @@ Usado en los tests:
   - CP-22: cancelación desde UI (sin efecto en backend)
   - CP-23 & PU-RN08: cancelar orden Programada o En Ejecucion
   - PU-RN05: no pasar a En ejecucion si fecha actual < fecha_programada
+
+tag: 1.0.0
 """
 
 from app.models.equipo import Equipo

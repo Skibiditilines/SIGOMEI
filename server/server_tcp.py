@@ -9,7 +9,7 @@ Uso:
 
 Defaults:
     HOST = 0.0.0.0   (acepta conexiones en todas las interfaces)
-    PORT = 9000
+    PORT = 5000
 
 El servidor usa ThreadingTCPServer para atender múltiples clientes
 de forma concurrente, cada uno en su propio hilo de SO.

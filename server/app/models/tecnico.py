@@ -10,6 +10,8 @@ Usado en los tests:
   - CP-09: eliminar técnico sin órdenes
   - CP-10: cambiar estatus a 'Inactivo'
   - CP-11 al CP-14, CP-19, CP-20: técnico asignado a una Orden
+
+tag: 1.0.0
 """
 
 

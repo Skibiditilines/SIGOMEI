@@ -5,6 +5,8 @@ Interfaz gráfica de usuario moderna y premium para SIGOMEI.
 Sigue el flujo de navegación multipágina interactivo de los bosquejos CRUD,
 manteniendo la paleta de colores oscuros (dark neon) del proyecto original.
 
+tag: 1.0.0
+
 Uso:
     python ui/main.py [--host 127.0.0.1] [--port 5000]
 """

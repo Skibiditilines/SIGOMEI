@@ -7,6 +7,7 @@ Usadas por los tests:
   - BusinessRuleException  → CP-12, CP-13, CP-14, CP-17, CP-19, PU-RN05, PU-RN06
   - ValidationError        → CP-02, CP-07
   - StateTransitionException → CP-15
+tag: 1.0.0
 """
 
 

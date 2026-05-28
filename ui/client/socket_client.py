@@ -17,6 +17,8 @@ Razón del modelo de conexión efímera:
     Simplifica la gestión de estado en la UI: no se necesita
     mantener un socket abierto ni manejar reconexiones automáticas.
     El overhead de TCP handshake es despreciable en LAN.
+
+tag: 1.0.0
 """
 
 import json

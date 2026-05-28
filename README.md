@@ -73,7 +73,11 @@ ui/
 ### Ejecución
 
 ```bash
+cd ui
 
+python main.py # Para ejecución local
+
+python main.py --host [ip de servidor] --port 5000
 ```
 
 ### Pruebas
@@ -126,5 +130,9 @@ project/
 ### Ejecución
 
 ```bash
+cd server
 
+python server_tcp.py # Ejecución local
+
+python server_tcp.py --host [ip de servidor] --port 5000
 ```

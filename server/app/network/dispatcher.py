@@ -25,6 +25,8 @@ Acciones soportadas:
     orden.actualizar_estado → OrdenController.actualizar_estado
     orden.reporte         → OrdenController.realizar_reporte
     orden.obtener         → OrdenController.obtener_orden
+
+tag: 1.0.0
 """
 
 import logging

@@ -9,18 +9,6 @@ Archivos de prueba cubiertos:
   - test_tecnico.py  → CP-06 al CP-10
   - test_orden.py    → CP-11 al CP-20, CP-22, CP-23, PU-RN05
   - test_general.py  → CP-24 (Sin conexión DB), CP-25 (Concurrencia / Sockets)
-
-⚠️  NOTA SOBRE CP-25 (Sockets / Concurrencia):
-  El test CP-25 simula dos peticiones concurrentes usando threads, lo que
-  refleja el comportamiento de un servidor que atiende múltiples clientes
-  simultáneamente a través de Sockets (similar a un servidor TCP con
-  accept() en bucle). La función `crear_orden_mock_concurrencia` debe
-  garantizar que cada hilo-cliente reciba un resultado distinto (ID único),
-  reproduciendo así la lógica de aislamiento de sesión por socket.
-  Sin embargo, los tests actuales NO levantan un socket real (no hay
-  socket.bind / socket.accept); simulan la concurrencia a nivel de threads
-  internos. No hay información suficiente para determinar si existe un
-  servidor Socket real separado — si lo hay, se indicará en su propio módulo.
 """
 
 import threading
